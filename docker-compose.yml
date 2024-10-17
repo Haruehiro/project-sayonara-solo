@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    volumes:
+      - /app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+      # If you're reading MYANIMELIST_CLIENT_ID from a .env file, you don't need to list it here explicitly.
+      # Docker Compose automatically uses variables from .env file in the project directory.

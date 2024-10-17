@@ -1,0 +1,151 @@
+<!-- This will display the json data so it looks user friendly. -->
+<!-- I messed this up. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Google Fonts link for global font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Current Season Anime - ( {{ season | capitalize }} {{ year }} )</title>
+    <style>
+        /* Apply font globally */
+        body {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 200; /* Use the 200 weight for ExtraLight */
+            margin: 0;
+            padding: 0;
+            text-align: center; /* Center aligns everything */
+            background-color: #fff; /* Default light background */
+            color: #000; /* Default dark text */
+            transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for theme change */
+        }
+        .dark-theme {
+            background-color: #333; /* Dark background */
+            color: #fff; /* Light text */
+        }
+        .dark-theme a, .dark-theme .page-link {
+            color: #4da3ff; /* Light links for dark theme */
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            margin: 0;
+            padding: 10px 0;
+        }
+        h1 a {
+            text-decoration: none; 
+            color: inherit;
+        }
+        .anime-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 0;
+            list-style: none;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        .anime-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        .anime-item img {
+            width: 200px;
+            height: auto;
+            border-radius: 8px;
+            margin: auto;
+        }
+        .anime-title {
+            margin-top: 5px;
+            font-size: 16px;
+            font-weight: 200;
+        }
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 30px; /* Add buffer at the bottom for mobile */
+        }
+        .page-link {
+            text-decoration: none;
+            margin: 0 10px;
+            color: #000;
+            font-weight: bold;
+        }
+        .disabled {
+            color: #aaa;
+            pointer-events: none;
+        }
+        /* Toggle button styling */
+        #theme-toggle-btn {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            background-color: #4da3ff;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><a href="https://sayonarakuso.com/current-season">Current Season Anime</a></h1>
+        <h2>{{ season | capitalize }} {{ year }}</h2>
+        <!-- Toggle Button -->
+        <button id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode</button>
+    </div>
+    <ul class="anime-list">
+        {% for anime in data %}
+        <li class="anime-item">
+            <img src="{{ anime.node.main_picture.medium }}" alt="{{ anime.node.title }}">
+            <div class="anime-title">
+                <!-- Truncate long titles max is 100 -->
+                <a href="https://myanimelist.net/search/all?q={{ anime.node.title | urlencode }}&cat=all" target="_blank">
+                    {{ anime.node.title }}
+                </a>
+            </div>
+        </li>
+        {% endfor %}        
+    </ul> 
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        {% if has_previous %}
+        <a href="?page={{ current_page - 1 }}" class="page-link">Previous</a>
+        {% else %}
+        <span class="page-link disabled">Previous</span>
+        {% endif %}
+        {% if has_next %}
+        <a href="?page={{ current_page + 1 }}" class="page-link">Next</a>
+        {% else %}
+        <span class="page-link disabled">Next</span>
+        {% endif %}
+    </div>
+    <!-- JavaScript for Theme Toggling -->
+    <script>
+        // Check and apply saved theme preference on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            var themePreference = localStorage.getItem('theme');
+            if (themePreference) {
+                document.body.classList.add(themePreference);
+                var btn = document.getElementById("theme-toggle-btn");
+                btn.innerText = themePreference === "dark-theme" ? "Light Mode" : "Dark Mode";
+            }
+        });
+        // persist it with local storage
+        function toggleTheme() {
+            var body = document.body;
+            body.classList.toggle("dark-theme");
+            var btn = document.getElementById("theme-toggle-btn");
+            btn.innerText = body.classList.contains("dark-theme") ? "Light Mode" : "Dark Mode";
+            // Save the current theme preference
+            localStorage.setItem('theme', body.classList.contains("dark-theme") ? "dark-theme" : "");
+        }
+    </script>
+</body>
+</html>
